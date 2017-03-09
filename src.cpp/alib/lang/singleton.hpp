@@ -91,8 +91,9 @@ namespace aworx { namespace lib { namespace lang
 
 //! @cond NO_DOX
 #if ALIB_FEAT_SINGLETON_MAPPED
-extern ALIB_API bool  getSingleton  ( const std::type_info& type, void* theSingleton );
-extern ALIB_API void  storeSingleton( const std::type_info& type, void* theSingleton );
+extern ALIB_API bool  getSingleton   ( const std::type_info& type, void* theSingleton );
+extern ALIB_API void  storeSingleton ( const std::type_info& type, void* theSingleton );
+extern ALIB_API void  removeSingleton( const std::type_info& type );
 #endif
 //! @endcond NO_DOX
 
@@ -263,7 +264,12 @@ class Singleton
         }
 
         /** Virtual destructor.     */
-        virtual  ~Singleton() {}
+        virtual  ~Singleton()
+        {
+            #if ALIB_FEAT_SINGLETON_MAPPED
+                removeSingleton( typeid(TDerivedClass) );
+            #endif
+        }
 
 };// class Singleton
 

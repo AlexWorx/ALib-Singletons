@@ -179,7 +179,7 @@
     #endif
 
     #if ALIB_MODULE_STRINGS && ALIB_MODULE_BOXING && ALIB_FEAT_BOXING_FTYPES
-        #include "alib/strings/stringboxing.hpp"
+        #include "alib/strings/boxing/stringboxing.hpp"
     #endif
 
     #if ALIB_MODULE_ALL
@@ -264,7 +264,7 @@
 #define ALIB_DEBUG_STRINGS_VFYBIT          (1 <<  1)
 
 #define ALIB_FEAT_THREADS_VFYBIT           (1 << 10)
-#define ALIB_FEAT_SINGLETON_MAPPED_VFYBIT  (1 << 12)
+#define ALIB_FEAT_SINGLETON_MAPPED_VFYBIT  (1 << 11)
 #define ALIB_FEAT_BOXING_FTYPES_VFYBIT     (1 << 12)
 #define ALIB_FEAT_BOXING_STD_VECTOR_VFYBIT (1 << 13)
 
@@ -733,8 +733,7 @@ using ALIB=                     aworx::lib::ALIB;
     #define ALIB_PROPER_INCLUSION
     #endif
 
-        #include "alib/strings/applyto.hpp"
-        #include "alib/strings/applyformat.hpp"
+        #include "alib/strings/applicables.hpp"
 
     #undef ALIB_PROPER_INCLUSION
 #endif

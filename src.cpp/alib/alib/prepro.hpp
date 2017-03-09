@@ -482,6 +482,49 @@
 #endif //DOX_PARSER
 
 
+
+/**
+ * @addtogroup GrpALibMacros
+ * @{
+ * @name Namespace Initialization
+ * Simple macros used by namespace \c Init() and \c TerminationCleanUp() functions
+ * to ensure single and avoid duplicate invocation.
+ * @{
+ *
+ * \def  ALIB_NAMESPACE_INIT_FLAG
+ *  Defines a flag. Placed in compilation unit, inside namespace, prior to \c Init() funciton.
+ *
+ * \def  ALIB_NAMESPACE_INIT_DEDUP
+ *  Placed in \c Init() function to prevent duplicate execution: throws \b %ALib assertion and
+ *  returns if already initialized.
+ *
+ *
+ * \def  ALIB_NAMESPACE_INIT_CHECK
+ *  Throws \b %ALib assertion if not initialized.
+ *
+ * @}
+ * @}
+ */
+#define ALIB_NAMESPACE_INIT_FLAG                extern int32_t  namespace_initialization_flag;                    \
+                                                       int32_t  namespace_initialization_flag= 0x3F2A;            \
+                                                ALIB_DEBUG_CODE(extern int namespace_initialization_count;        \
+                                                                       int namespace_initialization_count= 0;   )
+
+#define ALIB_NAMESPACE_INIT_DEDUP               ALIB_ASSERT_ERROR(  namespace_initialization_count++ < 2,         \
+                                                                   "Repeated namespace initialization (>= 1)"  )  \
+                                                ALIB_ASSERT_ERROR(    namespace_initialization_flag ==  0x3F2A    \
+                                                                   || namespace_initialization_flag ==  0x2E7B,   \
+                                                                   "Namespace initialization flag mismatch"     ) \
+                                                if ( namespace_initialization_flag != 0x3F2A )                    \
+                                                    return;                                                       \
+                                                namespace_initialization_flag =  0x2E7B;
+
+#define ALIB_NAMESPACE_INIT_CHECK(namespace)    ALIB_ASSERT_ERROR( namespace_initialization_flag ==  0x2E7B,                  \
+                                                                   "Namespace (respectively library) {!Q} not initialized.",  \
+                                                                   namespace  )
+
+
+
 /**
  * @addtogroup GrpALibCompilerSymbols
  * @{

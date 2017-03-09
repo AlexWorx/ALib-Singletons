@@ -64,9 +64,9 @@ struct RTTIMap_EqualTo
  **************************************************************************************************/
 template<typename TMapped>
 using TypeinfoMap= std::unordered_map< std::reference_wrapper<const std::type_info>,
-                                   TMapped,
-                                   RTTIMap_Hasher,
-                                   RTTIMap_EqualTo>;
+                                       TMapped,
+                                       RTTIMap_Hasher,
+                                       RTTIMap_EqualTo>;
 
 
 #if ALIB_DEBUG

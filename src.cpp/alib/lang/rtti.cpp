@@ -17,10 +17,8 @@
 #else
 
 #endif
-using namespace std;
 
 namespace aworx { namespace lib {
-
 
 /**
  * This namespace is available only in debug compilations of \b %ALib (see code selection symbol

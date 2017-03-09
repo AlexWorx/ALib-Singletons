@@ -13,7 +13,6 @@
     #include <mutex>
 #endif
 
-
 namespace aworx { namespace lib { namespace lang {
 
 //! @cond NO_DOX
@@ -56,6 +55,15 @@ namespace aworx { namespace lib { namespace lang {
         #if ALIB_FEAT_THREADS
         singletonLock.unlock();
         #endif
+    }
+
+    void  removeSingleton( const std::type_info& type )
+    {
+        auto it= singletonMap.find(type);
+        #if defined(ALIB_ASSERT_ERROR)
+            ALIB_ASSERT_ERROR( it != singletonMap.end(), "Can not remove singleton: Singleton not found" )
+        #endif
+        singletonMap.erase( it );
     }
 #endif
 
