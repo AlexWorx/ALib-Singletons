@@ -120,7 +120,7 @@ extern ALIB_API void  removeSingleton( const std::type_info& type );
  * class. This way, a second request for the singleton (from within the same software entity), will
  * not have the need to search the map again.
  * In other words, the data model is as follows: each derived template type will have exactly one
- * singleton instance, stored in the static hash map which is defined only once (in the ALib
+ * singleton instance, stored in the static hash map which is defined only once (in the \b %ALib
  * DLL or library). Software entities that have their own data segment (e.g. Windows DLLs) each
  * have one dedicated pointer to the singleton created by the entity itself or by one of the
  * other entities.
@@ -210,9 +210,9 @@ extern ALIB_API void  removeSingleton( const std::type_info& type );
  * needed. Now, in debug compilations (see compilation symbol #ALIB_DEBUG), this map can be
  * dumped any time and this way all singletons created at a certain point at runtime can be
  * listed.
- * For this, ALib provides namespace function
+ * For this, \b %ALib provides namespace function
  * \ref aworx::lib::debug::GetSingletons "GetSingletons".
- * This function is using class AString, and hence it is available only with ALib distributions that
+ * This function is using class AString, and hence it is available only with \b %ALib distributions that
  * includes module <b>ALib String</b>.
  * Fore example modules
  * [ALib Singleton](https://github.com/AlexWorx/ALib-Singleton) or
@@ -285,7 +285,7 @@ TDerivedClass* Singleton<TDerivedClass>::singleton= nullptr;
  * (Otherwise this can be omitted, as the memory is cleaned by the OS probably much faster when a
  * process exits).
  *
- * When using singletons with the full implementation of ALib (in contrast in using just the module
+ * When using singletons with the full implementation of \b %ALib (in contrast in using just the module
  * <b>ALib %Singleton</b>), then the method
  * \ref aworx::lib::ALIB::TerminationCleanUp "ALIB::TerminationCleanUp" invokes this method
  * already.

@@ -86,7 +86,7 @@
  * The symbols are defined in header <c>alib/distribution.hpp</c>, which varies per distribution.
  *
  * For module <b>ALib Singleton</b> no symbol is defined, as this module is included in any
- * \b ALib distribution.
+ *  \b %ALib distribution.
  *
  * \def  ALIB_MODULE_STRINGS
  *  Denotes if module <b>ALib Strings</b> is available in the library used.
@@ -211,7 +211,7 @@
  * directly clients of the library.
  *
  * \def  ALIB_VERSION_VERYFIER
- *  The ALib version. The value of this macro is written into field
+ *  The \b %ALib version. The value of this macro is written into field
  *  \ref aworx::lib::ALIB::Version "ALIB::Version".
  *
  * \def  ALIB_COMPATIBILITY_VERIFYER
@@ -258,7 +258,7 @@
  */
 
 
-#define ALIB_VERSION_VERYFIER              1702
+#define ALIB_VERSION_VERYFIER              1709
 
 #define ALIB_DEBUG_VFYBIT                  (1 <<  0)
 #define ALIB_DEBUG_STRINGS_VFYBIT          (1 <<  1)
@@ -308,7 +308,7 @@ namespace aworx { namespace lib {
  * \ref aworx::lib "ALib".
  * Among the things implemented here are:
  * - Collecting information on the executed process and its environment.
- * - Initialization of several ALib components with methods #Init and #TerminationCleanUp.
+ * - Initialization of several \b %ALib components with methods #Init and #TerminationCleanUp.
  * - Thread sleep methods
  *
  * \note In C# and Java implementations of this class, debug \e 'shortcuts' to methods of class
@@ -341,7 +341,7 @@ class ALIB
         static bool                                     IsInitialized()      { return initialized; }
 
         /**
-         * These flags are used internally to detect incompatibilities when linking ALib to
+         * These flags are used internally to detect incompatibilities when linking \b %ALib to
          * binaries that use different compilation flags.
          */
         ALIB_API static    const uint64_t               CompilationFlags;
@@ -354,7 +354,7 @@ class ALIB
         std::pair <const char*, uint64_t>               CompilationFlagMeanings[9];
 
         /**
-         * The ALib version. The versioning follows the scheme YYMM (2-digit year, 2-digit month)
+         * The \b %ALib version. The versioning follows the scheme YYMM (2-digit year, 2-digit month)
          * of the initial release date.
          * Besides this version number, field #Revision indicates if this is a revised version
          * of a former release.
@@ -362,8 +362,8 @@ class ALIB
         ALIB_API static    const int                    Version;
 
         /**
-         * The revision number of this release. Each ALib #Version is initially released as
-         * revision \e 0. Pure bug-fix releases that do not change the interface of ALib
+         * The revision number of this release. Each \b %ALib #Version is initially released as
+         * revision \e 0. Pure bug-fix releases that do not change the interface of \b %ALib
          * are holding the same #Version but an increased number in this field.
          */
         ALIB_API static    const int                    Revision;
@@ -371,7 +371,7 @@ class ALIB
 
         #if ALIB_MODULE_CONFIGURATION
             /**
-             * The name of the configuration category of configuration variables used by ALib.<br>
+             * The name of the configuration category of configuration variables used by \b %ALib.<br>
              * Defaults to "ALIB".<br>
              * This value can be changed to avoid conflicts between applications (especially in
              * respect to environment variable settings). Changes should be placed at very initial
@@ -414,7 +414,7 @@ class ALIB
          * writing, this object has to be acquired and after writing released.
          *
          * Because often, the standard \e output stream and standard \e error stream are identical,
-         * ALib provides one single lock for both, to protect also against interwoven
+         * \b %ALib provides one single lock for both, to protect also against interwoven
          * standard output and error information.
          *
          * If the 'entity' that is registering is not of type
@@ -439,7 +439,7 @@ class ALIB
          *   but it is for fast, buffered output streams.
          * <p>
          * \note
-         *   Logging library \b ALox, which is built on ALib, will register whenever a \e Logger
+         *   Logging library \b %ALox, which is built on \b %ALib, will register whenever a \e Logger
          *   is used that writes to the standard output stream. Hence, applications that in
          *   parallel use, e.g. 'std::cout', should register at bootstrap and \e acquire this
          *   instance prior to writing. This way, log output and other application output is
@@ -513,7 +513,7 @@ class ALIB
     // #############################################################################################
     public:
         /** ****************************************************************************************
-         * This method must be called prior to using ALib, e.g. at the beginning of
+         * This method must be called prior to using \b %ALib, e.g. at the beginning of
          * the \c main() method of an application. It is OK, to call this method more than once, which
          * allows independent code blocks (e.g. libraries) to bootstrap %ALIB independently.
          * However, only the first invocation is effective with the exclamation that if
@@ -522,15 +522,15 @@ class ALIB
          * second thread. Consequently, it has to be assured that this method is invoked once on
          * the real bootstrap an app.
          *
-         * The following actions are performed in the full distribution version of \b ALib. With
+         * The following actions are performed in the full distribution version of  \b %ALib. With
          * different <b>ALib Module</b> distributions, none-applicable steps are omitted.
          * - The configuration object is created
-         * - Classes of ALib namespace \ref aworx::lib::threads are prepared to work properly
-         * - Classes of ALib namespace \ref aworx::lib::time are prepared to work properly
-         * - glibc versions of ALib (GNU/unix) probably invoke glibc method
+         * - Classes of \b %ALib namespace \ref aworx::lib::threads are prepared to work properly
+         * - Classes of \b %ALib namespace \ref aworx::lib::time are prepared to work properly
+         * - glibc versions of \b %ALib (GNU/unix) probably invoke glibc method
          *   <em>setlocale()</em>, depending on the setting of the environment variables
          *   <em>LANG</em> and <em>LANGUAGE</em>
-         *   and depending on ALib configuration variable
+         *   and depending on \b %ALib configuration variable
          *   [ALIB_LOCALE](../group__GrpALoxConfigVars.html).
          * - Config variable [WAIT_FOR_KEY_PRESS](../group__GrpALoxConfigVars.html)
          *   is read and field #WaitForKeyPressOnTermination set accordingly
@@ -586,14 +586,14 @@ class ALIB
 
 
         /** ****************************************************************************************
-         * Verifies a given sets of ALib compilation flags with the internal set
+         * Verifies a given sets of \b %ALib compilation flags with the internal set
          * \ref ALIB::CompilationFlags. In case they are different in a way
-         * that ALib gets incompatible (e.g. different class sizes, which results in errors that are
+         * that \b %ALib gets incompatible (e.g. different class sizes, which results in errors that are
          * very hard to debug), the flags are written to \e cout for comparison and \c false is
          * returned.
          *
          * This method should be called on bootstrap to detect if incompatible library types were
-         * built. If several libraries that use ALib are linked together, each should invoke this
+         * built. If several libraries that use \b %ALib are linked together, each should invoke this
          * test against separately. The macro \c ALIB_COMPATIBILITY_VERIFYER will provide the
          * flags.
          *
@@ -610,7 +610,7 @@ class ALIB
     public:
         /** ****************************************************************************************
          * Suspends the current thread by calling <em>std::this_thread::sleep_for</em>.
-         * This is for compatibility with other platform versions of ALib.
+         * This is for compatibility with other platform versions of \b %ALib.
          * Variants of this method are #SleepMicros and #SleepNanos.
          *
          *  @param milliseconds    Sleep time in milliseconds.
@@ -619,7 +619,7 @@ class ALIB
 
         /** ****************************************************************************************
          * Suspends the current thread by calling <em>std::this_thread::sleep_for</em>.
-         * This is for compatibility with other platform versions of ALib.
+         * This is for compatibility with other platform versions of \b %ALib.
          * Variants of this method are #SleepMillis and #SleepNanos.
          *
          * @param microseconds    Sleep time in milliseconds.
@@ -628,7 +628,7 @@ class ALIB
 
         /** ****************************************************************************************
          * Suspends the current thread by calling <em>std::this_thread::sleep_for</em>.
-         * This is for compatibility with other platform versions of ALib.
+         * This is for compatibility with other platform versions of \b %ALib.
          * Variants of this method are #SleepMicros and #SleepMillis.
          *
          * @param nanoseconds    Sleep time in nanoseconds.
@@ -638,7 +638,7 @@ class ALIB
         #if ALIB_MODULE_CONFIGURATION
             /** ************************************************************************************
              * Suspends the current thread by calling <em>std::this_thread::sleep_for</em>.
-             * Provided for compatibility with other platform versions of ALib.
+             * Provided for compatibility with other platform versions of \b %ALib.
              * Variants of this method are #SleepMillis, #SleepMicros and #SleepNanos.
              *
              * @param ticks Sleep time in \b %Ticks.

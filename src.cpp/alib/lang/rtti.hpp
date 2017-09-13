@@ -29,8 +29,7 @@
     #include <unordered_map>
 #endif
 
-namespace aworx { namespace lib { namespace lang
-{
+namespace aworx { namespace lib { namespace lang {
 
 
 // #################################################################################################
@@ -59,7 +58,7 @@ struct RTTIMap_EqualTo
 /** ************************************************************************************************
  * Templated type definition for a hash map that stores objects of type \p TMapped with the
  * key being a C++ \b type_info reference object.<br>
- * This is mostly used by ALib internally to store pointers to objects to singletons of the
+ * This is mostly used by \b %ALib internally to store pointers to objects to singletons of the
  * provided type.
  **************************************************************************************************/
 template<typename TMapped>
@@ -75,7 +74,7 @@ using TypeinfoMap= std::unordered_map< std::reference_wrapper<const std::type_in
 
     /** ********************************************************************************************
      * Retrieves human readable names from C++ runtime type information.<br>
-     * This class is available only in debug compilations of ALib.
+     * This class is available only in debug compilations of \b %ALib.
      **********************************************************************************************/
     class TypeDemangler
     {
@@ -110,7 +109,7 @@ using TypeinfoMap= std::unordered_map< std::reference_wrapper<const std::type_in
 #endif // ALIB_DEBUG
 
 
-}}; // // namespace aworx[::lib::lang] (respectively aworx[::lib::debug])
+}}; // namespace aworx[::lib::lang] (respectively aworx[::lib::debug])
 
 
 } // namespace aworx

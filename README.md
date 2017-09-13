@@ -25,7 +25,7 @@ With C++ templates, the usually proposed and widely discussed solution is so sim
            
 This works fine in general unless you start accessing the same singleton objects from within different Windows DLLs or a Windows DLL and the main executable. Although running in one process, the singletons retrieved are singletons "per DLL/Executable". The reason for this is simply spoken that Windows DLLs dispose of an own data segment for global variables. This is different with shared libraries under GNU/Linux or macOS, which are designed to behave exactly as statically linked libraries. 
 
-#The Solution
+# The Solution
 
 The code provided with this repository creates true singleton objects, even when Windows OS DLLs are used. This is achieved by creating a static hash map (only once) and collecting all singletons herein. The C++ runtime type information struct **std::type_info** is used as the key to the singletons in the hash map.
 
@@ -33,7 +33,7 @@ As a side effect, the singletons created can be "dumped out" for debug purposes 
 
 As this approach imposes some overhead in respect to code size and speed, an alternative implementation that omits the use the hash map is provided. The code selects the "right" implementation depending on the platform it is compiled on. In addition, the implementation is switchable using compiler symbol definitions.  
 
-#Restrictions / Penalties
+# Restrictions / Penalties
 
 - The singleton class needs to have a default (parameterless) constructor. (This might be overcome with a simple extension of the class, but is not implemented here) 
 - The singleton class is virtual and hence all derived classes become virtual. This is needed to be able to have a virtual destructor.   
@@ -46,11 +46,14 @@ As this approach imposes some overhead in respect to code size and speed, an alt
   And do not be frustrated if "very wise people" tell you that you must never use a singleton. Your answer to them is: Each and every created instance of a virtual C++ class contains a pointer to a singleton, namely the [vtable](https://en.wikipedia.org/wiki/Virtual_method_table)!
 
 
-#Documentation
+# Documentation
 This code is an extraction from some bigger library (see below). For the documentation of class Singleton use this 
 [deep link](http://alexworx.github.io/ALox-Logging-Library/cpp_ref/classaworx_1_1lib_1_1lang_1_1Singleton.html) into ALib documentation.
 
-#Requirements and Usage
+# Changelog / Version History
+Changes are documented in **ALox** library's [changelog](http://http://alexworx.github.io/ALox-Logging-Library/changelog.html) which separately lists ALib and ALox changes. 
+
+# Requirements and Usage
 
 **Requirements to use the code are:**
 
@@ -91,7 +94,7 @@ The complete library [ALib for C++](http://alexworx.github.io/ALox-Logging-Libra
  
 The software is duly tested with Unit Tests. However, those are not part of this distribution.
 
-#Alternatives
+# Alternatives
 The following alternatives may be worth mentioning:
 
 - Probably the class code given as a sample above: This works well on GNU/Linux (even with shared libraries) and also with monolithic Windows OS executables. 
