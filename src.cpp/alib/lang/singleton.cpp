@@ -18,8 +18,8 @@ namespace aworx { namespace lib { namespace lang {
 //! @cond NO_DOX
 
 #if ALIB_FEAT_SINGLETON_MAPPED
-    extern ALIB_API TypeinfoMap<void*>  singletonMap; // not declared in a header, avoid clang (strict) warning
-           ALIB_API TypeinfoMap<void*>  singletonMap;
+    extern ALIB_API RTTIUnorderedMap<void*>  singletonMap; // not declared in a header, avoid clang (strict) warning
+           ALIB_API RTTIUnorderedMap<void*>  singletonMap;
 
 
     #if ALIB_FEAT_THREADS
@@ -99,7 +99,7 @@ void DeleteSingletons()
     #endif
 #endif
 
-//! @endcond NO_DOX
+//! @endcond
 
-}}}// namespace aworx::lib::lang
+}}}// namespace [aworx::lib::lang]
 

@@ -18,7 +18,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(SOURCE_FILES        ../../src.cpp/alib/alib.hpp
                         ../../src.cpp/alib/distribution.hpp
 
-                        ../../src.cpp/alib/alib/prepro.hpp
+                        ../../src.cpp/alib/lang/prepro.hpp
 
                         ../../src.cpp/alib/lang/rtti.hpp
                         ../../src.cpp/alib/lang/rtti.cpp

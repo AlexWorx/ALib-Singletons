@@ -36,36 +36,62 @@ namespace aworx { namespace lib { namespace lang {
 // Unordered map utility for storing type_info objects
 // #################################################################################################
 
-//! @cond NO_DOX
-struct RTTIMap_Hasher
+namespace detail {
+
+/**
+ * Alias for <c>std::reference_wrapper\<const std::type_info\></c>.
+ */
+using WrappedTypeInfo= std::reference_wrapper<const std::type_info>;
+
+/**
+ * Provides hash function for <c>std::type_info</c> references wrapped in
+ * <c>std::reference_wrapper</c>.
+ */
+struct WrappedTypeInfoHasher
 {
-    std::size_t operator()(std::reference_wrapper<const std::type_info> code) const
+    /**
+     * Invokes <c>std::type_info::hash_code</c> on the wrapped type.
+     * @param typeinfo  The wrapped type information.
+     * @return The hash value
+     */
+    std::size_t operator()(WrappedTypeInfo typeinfo) const
     {
-        return code.get().hash_code();
+        return typeinfo.get().hash_code();
     }
 };
 
-struct RTTIMap_EqualTo
+/**
+ * <c>std::equal_to</c> predicate for <c>std::type_info</c> references wrapped in
+ * <c>std::reference_wrapper</c>.
+ */
+struct WrappedTypeInfoPredEqualTo
 {
-    bool operator()(std::reference_wrapper<const std::type_info> lhs,
-                    std::reference_wrapper<const std::type_info> rhs) const
+    /**
+     * Invokes <c>operator ==</c> with \p lhs and \p rhs.
+     * @param lhs  The left-hand side value.
+     * @param rhs  The right-hand side value.
+     * @return \c true if the objects represent the same type, \c false otherwise.
+     */
+    bool operator()(WrappedTypeInfo lhs, WrappedTypeInfo rhs) const
     {
         return lhs.get() == rhs.get();
     }
 };
-//! @endcond NO_DOX
+
+} //namespace aworx::lib::lang[::detail]
 
 /** ************************************************************************************************
- * Templated type definition for a hash map that stores objects of type \p TMapped with the
- * key being a C++ \b type_info reference object.<br>
- * This is mostly used by \b %ALib internally to store pointers to objects to singletons of the
+ * Templated type definition for a <c>std::unordered_map</c> that uses key objects of type
+ * #detail::WrappedTypeInfo.<br>
+ * This is used by \b %ALib internally to store pointers to objects to singletons of the
  * provided type.
+ * @tparam T    The type of the objects to map.
  **************************************************************************************************/
-template<typename TMapped>
-using TypeinfoMap= std::unordered_map< std::reference_wrapper<const std::type_info>,
-                                       TMapped,
-                                       RTTIMap_Hasher,
-                                       RTTIMap_EqualTo>;
+template<typename T>
+using RTTIUnorderedMap= std::unordered_map< detail::WrappedTypeInfo,
+                                            T,
+                                            detail::WrappedTypeInfoHasher,
+                                            detail::WrappedTypeInfoPredEqualTo>;
 
 
 #if ALIB_DEBUG
@@ -107,7 +133,6 @@ using TypeinfoMap= std::unordered_map< std::reference_wrapper<const std::type_in
     }; // class TypeDemangler
 
 #endif // ALIB_DEBUG
-
 
 }}; // namespace aworx[::lib::lang] (respectively aworx[::lib::debug])
 

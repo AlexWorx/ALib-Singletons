@@ -36,7 +36,7 @@ namespace debug {
     TypeDemangler::TypeDemangler( const std::type_info& typeInfo )
     {
         int status;
-        name= abi::__cxa_demangle( typeInfo.name(), 0, 0, &status);
+        name= abi::__cxa_demangle( typeInfo.name(), nullptr, nullptr, &status);
         assert( status==0 );
     }
 
@@ -71,7 +71,7 @@ namespace debug {
 #endif
 
 
-}}}// namespace aworx::lib::lang
+}}}// namespace [aworx::lib::debug]
 
 
 #endif

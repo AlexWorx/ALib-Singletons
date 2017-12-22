@@ -10,6 +10,9 @@
 #define HPP_ALIB 1
 
 
+#define ALIB_VERSION              1712
+#define ALIB_REVISION                0
+
 // Uncomment to test for unnecessary includes. Must not be done with cotire unity builds.
 // #define HPP_COM_ALIB_TEST_INCLUDES
 
@@ -35,7 +38,6 @@
 
 // GNUC specific
 #if defined( __GNUC__ )
-
     #if !defined (_GLIBCXX_CSTDINT)
         #include <cstdint>
     #endif
@@ -62,7 +64,7 @@
         #define NOTAPE
         #include <windows.h>
     #endif
-    //! @endcond NO_DOX
+    //! @endcond
 
     #if !defined (_STDINT)
         #include <stdint.h>
@@ -77,25 +79,29 @@
 // Include ALib modules found
 // #################################################################################################
 
+
 /**
  * @addtogroup GrpALibCodeSelectorSymbols
  * @{
  * @name ALib Module Selection
- * This group of symbols determine the availability of different <b>ALib Modules</b> of the
+ * This group of symbols determine the availability of different <b>%ALib Modules</b> of the
  * \b %ALib distribution used.<br>
  * The symbols are defined in header <c>alib/distribution.hpp</c>, which varies per distribution.
  *
- * For module <b>ALib Singleton</b> no symbol is defined, as this module is included in any
+ * For module <b>%ALib Singleton</b> no symbol is defined, as this module is included in any
  *  \b %ALib distribution.
  *
  * \def  ALIB_MODULE_STRINGS
- *  Denotes if module <b>ALib Strings</b> is available in the library used.
+ *  Denotes if module <b>%ALib Strings</b> is available in the library used.
  *
  * \def  ALIB_MODULE_BOXING
- *  Denotes if module <b>ALib Boxing</b> is available in the library used.
+ *  Denotes if module <b>%ALib %Boxing</b> is available in the library used.
  *
  * \def  ALIB_MODULE_CONFIGURATION
- *  Denotes if module <b>ALib Configuration</b> is available in the library used.
+ *  Denotes if module <b>%ALib Configuration</b> is available in the library used.
+ *
+ * \def  ALIB_MODULE_SYSTEM
+ *  Denotes if module <b>%ALib System</b> is available in the library used.
  *
  * \def  ALIB_MODULE_ALL
  *  Denotes if this is a complete version of \b %ALib.
@@ -108,14 +114,14 @@
     #define     ALIB_MODULE_BOXING
     #define     ALIB_MODULE_STRINGS
     #define     ALIB_MODULE_CONFIGURATION
+    #define     ALIB_MODULE_SYSTEM
     #define     ALIB_MODULE_ALL
 #else
 #define ALIB_PROPER_INCLUSION
 #endif
 
-
     // basics used with all modules
-    #include "alib/alib/prepro.hpp"
+    #include "alib/lang/prepro.hpp"
 
     // read module-specific (distribution specific) preprocessor symbols
     #include "alib/distribution.hpp"
@@ -127,12 +133,17 @@
     #if !defined(ALIB_MODULE_CONFIGURATION)
         #define ALIB_MODULE_CONFIGURATION   ALIB_MODULE_ALL
     #endif
-    #if !defined(ALIB_MODULE_BOXING)
-        #define ALIB_MODULE_BOXING          ALIB_MODULE_ALL
 
+    #if !defined(ALIB_MODULE_BOXING)
+        #define ALIB_MODULE_BOXING        ( ALIB_MODULE_ALL || ALIB_MODULE_CONFIGURATION )
     #endif
+
     #if !defined(ALIB_MODULE_STRINGS)
-        #define ALIB_MODULE_STRINGS         (ALIB_MODULE_ALL || ALIB_MODULE_CONFIGURATION)
+        #define ALIB_MODULE_STRINGS       ( ALIB_MODULE_ALL || ALIB_MODULE_CONFIGURATION )
+    #endif
+
+    #if !defined(ALIB_MODULE_SYSTEM)
+        #define ALIB_MODULE_SYSTEM          ALIB_MODULE_ALL
     #endif
 
     #if ALIB_MODULE_ALL  && !( ALIB_MODULE_BOXING || ALIB_MODULE_STRINGS )
@@ -140,23 +151,20 @@
     #endif
 
     #if ALIB_MODULE_BOXING || ALIB_MODULE_STRINGS
-        #include "alib/alib/debug.hpp"
+        #include "alib/debug/assert.hpp"
     #endif
 
-    // Header: RTTI always needed
+    // always needed
     #include "alib/lang/rtti.hpp"
 
-    // Module: Singleton (the first, independent module)
+    // Module: Singleton (the first, independent module, always included)
     #include "alib/lang/singleton.hpp"
 
-    // Module: Boxing
-    #if ALIB_MODULE_BOXING
+
+    #if ALIB_MODULE_BOXING || ALIB_MODULE_STRINGS
         #include "alib/lang/types.hpp"
-        #include "alib/boxing/boxing.hpp"
-    #else
-        #define ALIB_FEAT_BOXING_FTYPES      0
-        #define ALIB_FEAT_BOXING_STD_VECTOR  0
     #endif
+
 
     #if ALIB_MODULE_STRINGS
         #if !defined(HPP_ALIB_LANG_TYPES)
@@ -166,16 +174,29 @@
         #include "alib/lang/enums.hpp"
         #include "alib/strings/cstring.hpp"
         #include "alib/strings/string.hpp"
+        #include "alib/strings/tstring.hpp"
+        #include "alib/strings/stringliteral.hpp"
+        #include "alib/strings/astring.hpp"
+        #include "alib/strings/preallocatedstring.hpp"
+
+        #include "alib/lang/resources.hpp"
+        #include "alib/lang/library.hpp"
+        #include "alib/strings/stringlib.hpp"
     #else
         #define ALIB_DEBUG_STRINGS  0
     #endif
 
 
+
+    #if ALIB_MODULE_BOXING
+        #include "alib/boxing/boxinglib.hpp"
+    #else
+        #define ALIB_FEAT_BOXING_FTYPES      0
+        #define ALIB_FEAT_BOXING_STD_VECTOR  0
+    #endif
+
     #if ALIB_MODULE_STRINGS
-        #include "alib/strings/tstring.hpp"
-        #include "alib/strings/stringliteral.hpp"
-        #include "alib/strings/astring.hpp"
-        #include "alib/strings/preallocatedstring.hpp"
+    #   include "alib/lang/langlib.hpp"
     #endif
 
     #if ALIB_MODULE_STRINGS && ALIB_MODULE_BOXING && ALIB_FEAT_BOXING_FTYPES
@@ -190,15 +211,58 @@
         #include "alib/lang/report.hpp"
     #endif
 
+    #if ALIB_MODULE_STRINGS  && !defined(HPP_ALIB_LANG_ENUM_META_DATA)
+        #include "alib/lang/enumbitwise.hpp"
+        #include "alib/lang/enummetadata.hpp"
+    #endif
+
+
+    #if ALIB_MODULE_CONFIGURATION
+        #include "alib/config/configlib.hpp"
+    #endif
+
+
+    #if ALIB_MODULE_ALL || ALIB_MODULE_CONFIGURATION
+        #include "alib/system/systemlib.hpp"
+    #endif
+
 #undef  ALIB_PROPER_INCLUSION
 
-// anything else is omitted with module "ALib Singleton"
 #if ALIB_MODULE_BOXING || ALIB_MODULE_STRINGS
+
 
 
 // #################################################################################################
 // Version verification macros
 // #################################################################################################
+
+/**
+ * @defgroup GrpALibCompilerSymbols ALib Compilation Symbols
+ *
+ * Symbols (C++ preprocessor macros) listed here, support adding or removing features to \b %ALib when
+ * compiling the library and any code unit that uses \b %ALib.
+ * These symbols must be used <em>only within makefiles or IDE project files to be passed to the
+ * C++ compiler (!) </em> (normally -D option). In other words: they must not be defined or undefined
+ * within the source code that uses \b %ALib.
+ *
+ * \b %ALib Symbols are prefixed with <em>ALIB_</em>.
+ *
+ * For most of the symbols, a version with suffix <em>_ON</em> and for some also one with the suffix
+ * <em>_OFF</em> exists. These symbol decide about the definition, respectively the avoidance of the
+ * definition of a corresponding <em>code selection symbol</em> that is named the same without the
+ * suffix.<br>
+ * If both are set at the same time, a compiler error is generated by \b %ALib header files.
+ * If none of them is passed to the compiler, a default value is assumed.<p>
+ *
+ * As a convenience, to get default behavior, no symbol needs to be passed to the compiler.<p>
+ *
+ * \note Some of the compilation symbols are changing the definition of classes and methods which
+ *       makes binaries incompatible with binaries that do not use the same setting for each of
+ *       these symbols.<br>
+ *       Symbols that have to be kept equal across compilation units are denoted in this
+ *       documentation.
+ * @{ @}
+ */
 
 /**
  * @addtogroup GrpALibMacros
@@ -210,81 +274,127 @@
  * The macros are used internally, respectively 'automatically'. Hence, they need not to be used
  * directly clients of the library.
  *
- * \def  ALIB_VERSION_VERYFIER
- *  The \b %ALib version. The value of this macro is written into field
- *  \ref aworx::lib::ALIB::Version "ALIB::Version".
+ * \def  ALIB_VERSION
+ *  The \b %ALib version number. The value of this macro is written into field
+ *  \alib{lang,Library::Version} of singleton \ref aworx::lib::ALIB (and corresponding
+ *  sub-library objects as well).
  *
- * \def  ALIB_COMPATIBILITY_VERIFYER
- *  Macro that 'calculates' the bits set in field
- *  \ref aworx::lib::ALIB::CompilationFlags "ALIB::CompilationFlags".
+ * \def  ALIB_REVISION
+ *  The \b %ALib revision number. The value of this macro is written into field
+ *  \alib{lang,Library::Revision} of singleton \ref aworx::lib::ALIB (and corresponding
+ *  sub-library singletons as well).
  *
- * \def  ALIB_DEBUG_VFYBIT
- *  The bit in field \ref aworx::lib::ALIB::CompilationFlags "ALIB::CompilationFlags" that
- *  stores information about the value of code selection symbol \ref ALIB_DEBUG.
+ * \def  ALIB_COMPILATION_FLAGS
+ *  Macro to provide the a compilation flag verifier value to be used with method
+ *  \alib{lang,Library::VerifyCompilationFlags} of singleton \alib{ALIB}.
  *
- * \def  ALIB_DEBUG_STRINGS_VFYBIT
- *  The bit in field \ref aworx::lib::ALIB::CompilationFlags "ALIB::CompilationFlags" that
- *  stores information about the value of code selection symbol \ref ALIB_DEBUG_STRINGS.
- *
- * \def  ALIB_FEAT_THREADS_VFYBIT
- *  The bit in field \ref aworx::lib::ALIB::CompilationFlags "ALIB::CompilationFlags" that
- *  stores information about the value of code selection symbol \ref ALIB_FEAT_THREADS.
- *
- * \def  ALIB_FEAT_SINGLETON_MAPPED_VFYBIT
- *  The bit in field \ref aworx::lib::ALIB::CompilationFlags "ALIB::CompilationFlags" that
- *  stores information about the value of code selection symbol \ref ALIB_FEAT_SINGLETON_MAPPED.
- *
- * \def  ALIB_FEAT_BOXING_FTYPES_VFYBIT
- *  The bit in field \ref aworx::lib::ALIB::CompilationFlags "ALIB::CompilationFlags" that
- *  stores information about the value of code selection symbol \ref ALIB_FEAT_BOXING_FTYPES.
- *
- * \def  ALIB_FEAT_BOXING_STD_VECTOR_VFYBIT
- *  The bit in field \ref aworx::lib::ALIB::CompilationFlags "ALIB::CompilationFlags" that
- *  stores information about the value of code selection symbol \ref ALIB_FEAT_BOXING_STD_VECTOR.
- *
- * \def  ALIB_MODULE_STRINGS_VFYBIT
- *  The bit in field \ref aworx::lib::ALIB::CompilationFlags "ALIB::CompilationFlags" that
- *  stores information about the value of code selection symbol \ref ALIB_MODULE_STRINGS.
- *
- * \def  ALIB_MODULE_BOXING_VFYBIT
- *  The bit in field \ref aworx::lib::ALIB::CompilationFlags "ALIB::CompilationFlags" that
- *  stores information about the value of code selection symbol \ref ALIB_MODULE_BOXING.
- *
- * \def  ALIB_MODULE_ALL_VFYBIT
- *  The bit in field \ref aworx::lib::ALIB::CompilationFlags "ALIB::CompilationFlags" that
- *  stores information about the value of code selection symbol \ref ALIB_MODULE_ALL.
  * @}
  * @}
  */
 
+#if defined(DOX_PARSER)
+    #define  ALIB_COMPILATION_FLAGS
+#else
+    #define ALIB_DEBUG_VFYBIT                  (1 <<  0)
+    #define ALIB_DEBUG_STRINGS_VFYBIT          (1 <<  1)
 
-#define ALIB_VERSION_VERYFIER              1709
+    #define ALIB_FEAT_THREADS_VFYBIT           (1 << 10)
+    #define ALIB_FEAT_SINGLETON_MAPPED_VFYBIT  (1 << 11)
+    #define ALIB_FEAT_BOXING_FTYPES_VFYBIT     (1 << 12)
+    #define ALIB_FEAT_BOXING_STD_VECTOR_VFYBIT (1 << 13)
 
-#define ALIB_DEBUG_VFYBIT                  (1 <<  0)
-#define ALIB_DEBUG_STRINGS_VFYBIT          (1 <<  1)
-
-#define ALIB_FEAT_THREADS_VFYBIT           (1 << 10)
-#define ALIB_FEAT_SINGLETON_MAPPED_VFYBIT  (1 << 11)
-#define ALIB_FEAT_BOXING_FTYPES_VFYBIT     (1 << 12)
-#define ALIB_FEAT_BOXING_STD_VECTOR_VFYBIT (1 << 13)
-
-#define ALIB_MODULE_ALL_VFYBIT             (1 << 20)
-#define ALIB_MODULE_STRINGS_VFYBIT         (1 << 21)
-#define ALIB_MODULE_BOXING_VFYBIT          (1 << 22)
-
-
-#define    ALIB_COMPATIBILITY_VERIFYER  (   ALIB_DEBUG_VFYBIT                   * ALIB_DEBUG                    \
-                                          + ALIB_FEAT_THREADS_VFYBIT            * ALIB_FEAT_THREADS             \
-                                          + ALIB_FEAT_SINGLETON_MAPPED_VFYBIT   * ALIB_FEAT_SINGLETON_MAPPED    \
-                                          + ALIB_FEAT_BOXING_FTYPES_VFYBIT      * ALIB_FEAT_BOXING_FTYPES       \
-                                          + ALIB_FEAT_BOXING_STD_VECTOR_VFYBIT  * ALIB_FEAT_BOXING_STD_VECTOR   \
-                                          + ALIB_DEBUG_STRINGS_VFYBIT           * ALIB_DEBUG_STRINGS            \
-                                          + ALIB_MODULE_ALL_VFYBIT              * ALIB_MODULE_BOXING            \
-                                          + ALIB_MODULE_STRINGS_VFYBIT          * ALIB_MODULE_STRINGS           \
-                                          + ALIB_MODULE_BOXING_VFYBIT           * ALIB_MODULE_BOXING            \
-                                        )
+    #define ALIB_MODULE_ALL_VFYBIT             (1 << 20)
+    #define ALIB_MODULE_STRINGS_VFYBIT         (1 << 21)
+    #define ALIB_MODULE_BOXING_VFYBIT          (1 << 22)
 
 
+    #define    ALIB_COMPILATION_FLAGS                                                            \
+    ( ALIB_DEBUG_VFYBIT + ( ALIB_DEBUG                          * ALIB_DEBUG_VFYBIT           )  \
+                        + ( ALIB_FEAT_THREADS_VFYBIT            * ALIB_FEAT_THREADS           )  \
+                        + ( ALIB_FEAT_SINGLETON_MAPPED_VFYBIT   * ALIB_FEAT_SINGLETON_MAPPED  )  \
+                        + ( ALIB_FEAT_BOXING_FTYPES_VFYBIT      * ALIB_FEAT_BOXING_FTYPES     )  \
+                        + ( ALIB_FEAT_BOXING_STD_VECTOR_VFYBIT  * ALIB_FEAT_BOXING_STD_VECTOR )  \
+                        + ( ALIB_DEBUG_STRINGS_VFYBIT           * ALIB_DEBUG_STRINGS          )  \
+                        + ( ALIB_MODULE_ALL_VFYBIT              * ALIB_MODULE_BOXING          )  \
+                        + ( ALIB_MODULE_STRINGS_VFYBIT          * ALIB_MODULE_STRINGS         )  \
+                        + ( ALIB_MODULE_BOXING_VFYBIT           * ALIB_MODULE_BOXING          )  \
+    )
+#endif
+
+
+
+#if ALIB_MODULE_BOXING  || ALIB_MODULE_STRINGS
+
+namespace aworx { namespace lib {
+
+  /**
+   * Internals of namespace #aworx::lib
+   */
+  namespace detail {
+
+    #if defined(DOX_PARSER)
+        /** ************************************************************************************
+         * Same as \c std::strlen and \c std::wcslen but using char32_t arrays.
+         * \note
+         *   As far as we know, no (fast) platform specific versions of this method is
+         *   available.
+         *   Therefore, this method together with \alib{detail::strlen32} uses a
+         *   preprocessor switch dependent on the sizeof(wchar_t).
+         *
+         * @param s Pointer to the start of the cstring.
+         *
+         * @return  The length of string, aka the first index containing a value \c 0.
+         **************************************************************************************/
+        ALIB_API extern
+        size_t   strlen16( const char16_t* s );
+
+        /** ************************************************************************************
+         * Same as \c std::strlen and \c std::wcslen but using char32_t arrays.
+         * \note
+         *   As far as we know, no (fast) platform specific versions of this method is
+         *   available.
+         *   Therefore, this method together with \alib{detail::strlen16} uses a
+         *   preprocessor switch dependent on the sizeof(wchar_t).
+         *
+         * @param s Pointer to the start of the cstring.
+         *
+         * @return  The length of string, aka the first index containing a value \c 0.
+         **************************************************************************************/
+        inline
+        size_t   strlen32( const char32_t* s )
+        {
+            static_assert( sizeof(wchar_t) == sizeof( char32_t), "Error: Platform not supported" );
+            return wcslen( reinterpret_cast<const wchar_t*>(s) );
+        }
+
+    #elif ALIB_SIZEOF_WCHAR_T == 4
+        ALIB_API extern
+        size_t   strlen16( const char16_t* s );
+
+        inline
+        size_t   strlen32( const char32_t* s )
+        {
+            static_assert( sizeof(wchar_t) == sizeof( char32_t), "Error: Platform not supported" );
+            return wcslen( reinterpret_cast<const wchar_t*>(s) );
+        }
+    #else
+        inline
+        size_t   strlen16( const char16_t* s )
+        {
+            static_assert( sizeof(wchar_t) == sizeof( char16_t), "Error: Platform not supported" );
+            return wcslen( reinterpret_cast<const wchar_t*>(s) );
+        }
+
+        ALIB_API extern
+        size_t   strlen32( const char32_t* s );
+    #endif
+
+}}} //namespace [aworx::lib::detail]
+
+#endif  // ALIB_MODULE_BOXING || ALIB_MODULE_STRINGS
+
+
+#if ALIB_MODULE_STRINGS
 
 namespace aworx { namespace lib {
 
@@ -294,22 +404,45 @@ namespace aworx { namespace lib {
 // #################################################################################################
 #if ALIB_MODULE_CONFIGURATION
     namespace config  { class  Configuration;
-                        struct VariableDefinition;   }
-    namespace threads { class  SmartLock;            }
+                        struct VariableDecl;   }
+    namespace threads { class  ThreadLock;
+                        class  SmartLock;            }
     namespace time    { class  Ticks;                }
 #endif
+
+// #################################################################################################
+// Variables
+// #################################################################################################
+#if ALIB_MODULE_CONFIGURATION
+    /**
+     * Configuration variables of \alib.
+     * \note
+     *  The variables are declared using \alib{lang,T_EnumMetaDataDecl,enum meta data}
+     *  and macro \ref ALIB_CONFIG_VARIABLES.
+     *  Hence, all variable categories, names, default values and such can be modified
+     *  by software using \alib by modifying the resource data of the
+     *  \ref aworx::lib::ALIB "ALib library singleton".
+     */
+    enum class Variables
+    {
+        LOCALE               = 1   , ///< \alib Resourced variable.
+        WAIT_FOR_KEY_PRESS   = 2   , ///< \alib Resourced variable.
+        HAS_CONSOLE_WINDOW   = 3   , ///< \alib Resourced variable.
+    };
+#endif // ALIB_MODULE_CONFIG
+
 
 // #################################################################################################
 // class ALIB
 // #################################################################################################
 
 /** ************************************************************************************************
- * This class is a 100% static placeholder for global methods and fields of
- * \ref aworx::lib "ALib".
- * Among the things implemented here are:
- * - Collecting information on the executed process and its environment.
- * - Initialization of several \b %ALib components with methods #Init and #TerminationCleanUp.
- * - Thread sleep methods
+ * This is the library class for namespace \ref aworx::lib. As \alib is more a collection of
+ * libraries than a simple one, in respect to library initialization not too much is performed
+ * (in method #init), because the duties are distributed to the sub-libraries.
+ *
+ * Apart from implementing class \b %Library, this class is a 100% static placeholder for a few
+ * global methods and fields.
  *
  * \note In C# and Java implementations of this class, debug \e 'shortcuts' to methods of class
  *       \ref aworx::lib::lang::Report "Report" exist. In the C++ version, such methods are provided as
@@ -317,80 +450,22 @@ namespace aworx { namespace lib {
  *
  * <p>
  * \note The availability of certain fields and methods of this class is dependent the distribution
- *       version of \b %ALib. With module <b>ALib Singleton</b>, the class does not exist at
+ *       version of \b %ALib. With module <b>%ALib Singleton</b>, the class does not exist at
  *       all.<br>
  *       See \ref aworx::lib for more "namespace documentation" for information
  *       about \b %ALib modules and the distributions available.
  **************************************************************************************************/
-class ALIB
+class ALib  : public lang::Library
 {
     // #############################################################################################
     // internal statics
     // #############################################################################################
     protected:
 
-        /**  State of initialization, used to avoid double initialization.   */
-        static bool                                     initialized;
-
     // #############################################################################################
     // Public fields
     // #############################################################################################
     public:
-        /** Returns state of initialization, used internally to avoid deadlocks during init.
-         *  @return \c true if was initialized already. */
-        static bool                                     IsInitialized()      { return initialized; }
-
-        /**
-         * These flags are used internally to detect incompatibilities when linking \b %ALib to
-         * binaries that use different compilation flags.
-         */
-        ALIB_API static    const uint64_t               CompilationFlags;
-
-        /**
-         * This is for creation (debug) output on information about the bits found in
-         * field #CompilationFlags.
-         */
-        ALIB_API static
-        std::pair <const char*, uint64_t>               CompilationFlagMeanings[9];
-
-        /**
-         * The \b %ALib version. The versioning follows the scheme YYMM (2-digit year, 2-digit month)
-         * of the initial release date.
-         * Besides this version number, field #Revision indicates if this is a revised version
-         * of a former release.
-         */
-        ALIB_API static    const int                    Version;
-
-        /**
-         * The revision number of this release. Each \b %ALib #Version is initially released as
-         * revision \e 0. Pure bug-fix releases that do not change the interface of \b %ALib
-         * are holding the same #Version but an increased number in this field.
-         */
-        ALIB_API static    const int                    Revision;
-
-
-        #if ALIB_MODULE_CONFIGURATION
-            /**
-             * The name of the configuration category of configuration variables used by \b %ALib.<br>
-             * Defaults to "ALIB".<br>
-             * This value can be changed to avoid conflicts between applications (especially in
-             * respect to environment variable settings). Changes should be placed at very initial
-             * bootstrap code, before the invocation of #Init.
-             * <p>
-             * \note
-             *   This field and corresponding variable definitions found in this class, are available
-             *   only in module <b>ALib Configuration</b> or the complete distribution version
-             *   of \b %ALib.
-             */
-            ALIB_API static    strings::String              ConfigCategoryName;
-
-            ALIB_API static    config::VariableDefinition   RTE;                    ///< Configuration variable definition
-            ALIB_API static    config::VariableDefinition   LOCALE;                 ///< Configuration variable definition
-            ALIB_API static    config::VariableDefinition   WAIT_FOR_KEY_PRESS;     ///< Configuration variable definition
-            ALIB_API static    config::VariableDefinition   HAS_CONSOLE_WINDOW;     ///< Configuration variable definition
-
-        #endif // ALIB_MODULE_CONFIG
-
         /**
         * If \c true, within #TerminationCleanUp, it is waited for a key press in the console
         * window.<br>
@@ -399,7 +474,7 @@ class ALIB
         * [ALIB_WAIT_FOR_KEY_PRESS](../group__GrpALoxConfigVars.html).<br>
         * In addition, this public flag may be modified at runtime (after method #Init was invoked).
         */
-        ALIB_API static    bool                            WaitForKeyPressOnTermination;
+        bool         WaitForKeyPressOnTermination=                                            false;
 
         /**
          * This is a smart mutex that allows to lock an applications' <em>standard output
@@ -449,8 +524,14 @@ class ALIB
          *   This fields is available only in the complete distribution version of \b %ALib.
          */
         #if ALIB_MODULE_ALL
-        ALIB_API static    threads::SmartLock              StdOutputStreamsLock;
+            threads::SmartLock&                         StdOutputStreamsLock;
         #endif
+
+    // #############################################################################################
+    // Constructor
+    // #############################################################################################
+    public:
+        ALIB_API        ALib();
 
     // #############################################################################################
     // Environment definition/detection
@@ -470,139 +551,48 @@ class ALIB
              *  @return \c true if the application has a console window attached.
              *
              * \note
-             *   This fields is available only with module <b>ALib Configuration</b> or with the
+             *   This fields is available only with module <b>%ALib Configuration</b> or with the
              *   complete distribution version of \b %ALib.
              **************************************************************************************/
             ALIB_API
-            static bool                 HasConsoleWindow();
+            bool                        HasConsoleWindow();
         #endif
 
         #if ALIB_MODULE_ALL
             /** ************************************************************************************
-             * If \c true, the current process is under the hood of a debugger. This is evaluated
-             * within \ref aworx::lib::ALIB::Init "ALIB::Init".
-             * \see Field #DebuggerProcessNames.
+             * If \c true, the current process is under the hood of a debugger.
              *
              * \note
-             *   This fields is available only in the complete distribution version of \b %ALib.
+             *   This fields is available only in the complete distribution version of \alib.
+             *
              * @return \c true if the application is run in a debugger.
              **************************************************************************************/
             ALIB_API
-            static bool                 IsDebuggerPresent();
+            bool                        IsDebuggerPresent();
 
-            /** ************************************************************************************
-             * Available under Unix like OS (incl. Mac OS) only.
-             * Used by method #IsDebuggerPresent to determine if a debugger process is found in the
-             * list of parent processes.<br>
-             * May contain a list of process names, separated by the pipe symbol (<c>'|'</c>). It is
-             * tested if the name of the parent process starts with one of the names contained herein.
-             * Defaults to \c 'gdb|debugserver' and can be changed on bootstrap of the process if a
-             * different debugger is used.
-             *
-             * \note
-             *   This fields is available only in the complete distribution version of \b %ALib.
-             **************************************************************************************/
-            #if defined(__unix__) || defined(__APPLE__)
-            ALIB_API
-            static String               DebuggerProcessNames;
-            #endif
         #endif
 
     // #############################################################################################
-    // Init/TerminationCleanUp()
+    // Compilation Flags
     // #############################################################################################
     public:
-        /** ****************************************************************************************
-         * This method must be called prior to using \b %ALib, e.g. at the beginning of
-         * the \c main() method of an application. It is OK, to call this method more than once, which
-         * allows independent code blocks (e.g. libraries) to bootstrap %ALIB independently.
-         * However, only the first invocation is effective with the exclamation that if
-         * command line parameters are provided with a call, those are set.
-         * Also, the very first invocation should not be interrupted by a parallel invocation of a
-         * second thread. Consequently, it has to be assured that this method is invoked once on
-         * the real bootstrap an app.
-         *
-         * The following actions are performed in the full distribution version of  \b %ALib. With
-         * different <b>ALib Module</b> distributions, none-applicable steps are omitted.
-         * - The configuration object is created
-         * - Classes of \b %ALib namespace \ref aworx::lib::threads are prepared to work properly
-         * - Classes of \b %ALib namespace \ref aworx::lib::time are prepared to work properly
-         * - glibc versions of \b %ALib (GNU/unix) probably invoke glibc method
-         *   <em>setlocale()</em>, depending on the setting of the environment variables
-         *   <em>LANG</em> and <em>LANGUAGE</em>
-         *   and depending on \b %ALib configuration variable
-         *   [ALIB_LOCALE](../group__GrpALoxConfigVars.html).
-         * - Config variable [WAIT_FOR_KEY_PRESS](../group__GrpALoxConfigVars.html)
-         *   is read and field #WaitForKeyPressOnTermination set accordingly
-         *
-         * \note If other, custom configuration data sources should be used already with this method
-         *       (to read the configuration variables as described above),
-         *       according configuration plug-ins have to be added attached to public, static field
-         *       \ref aworx::lib::config::Configuration::Default "Configuration::Default"
-         *       prior to invoking this method.
-         *
-         * <p>
-         *
-         * \note %ALIB must not be used before all global/static variables are created. Hence, it
-         *       is not allowed to initialize %ALIB within static variable initialization code.
-         *       This restriction is wanted by design, because different platforms and compilers
-         *       implement the initialization phase of static and global code differently and it is
-         *       not considered good programming style to rely on C++ bootstrap.
-         *       Using %ALIB within C++ bootstrap is undefined behavior.
-         *
-         * <p>
-         *
-         * \note On the Windows platform, the Microsoft compiler provides the global variables
-         *       <em>__argc</em> and <em>__argv</em> (respectively <em>__wargv</em> for wide
-         *       character binaries. These variables a can be used if this method is invoked
-         *       outside of the <em>main()</em> method.
-         *
-         * @param argc    Parameter usually taken from <em>standard C</em> \c main() method
-         *                (the number of arguments in \p argv).
-         *                Defaults to 0.
-         * @param argv    Parameter usually taken from <em>standard C</em> \c main() method
-         *                (pointer to a list of command line arguments).
-         *                Defaults to nullptr.
-         ******************************************************************************************/
-        ALIB_API
-        static void     Init( int argc =0,  char **argv =nullptr );
 
         /** ****************************************************************************************
-         * Variant of method #Init, accepting command line arguments of type \c wchar_t.
+         * Checks the versions of \alib and if the current compilation unit shares compatible
+         * compilation symbols with the \alib compilation.
          *
-         * @param argc    Parameter usually taken from <em>standard C</em> \c main() method
-         *                (the number of arguments in \p argv).
-         * @param argv    The command line parameters as \c wchar_t.
+         * This method should be invoked in the bootstrap code of your processes and libraries
+         * to check for compilation/link mismatch.
+         * Use macro \ref ALIB_COMPILATION_FLAGS for parameter \p compilationFlags
+         *
+         * @param alibVersion      The \alib version required.
+         * @param compilationFlags The flags as defined in invoking compilation unit.
+         *                         Use \ref ALIB_COMPILATION_FLAGS.
          ******************************************************************************************/
         ALIB_API
-        static void     Init( int  argc,    wchar_t **argv );
+        void     CheckCompatibility( int      alibVersion,
+                                     uint64_t compilationFlags );
 
-        /** ****************************************************************************************
-         * Cleans up memory on termination. This method is useful if using memory analysis tools
-         * (such as Valgrind) to remove any internal allocations before a program terminates.
-         ******************************************************************************************/
-        ALIB_API
-        static void     TerminationCleanUp();
-
-
-        /** ****************************************************************************************
-         * Verifies a given sets of \b %ALib compilation flags with the internal set
-         * \ref ALIB::CompilationFlags. In case they are different in a way
-         * that \b %ALib gets incompatible (e.g. different class sizes, which results in errors that are
-         * very hard to debug), the flags are written to \e cout for comparison and \c false is
-         * returned.
-         *
-         * This method should be called on bootstrap to detect if incompatible library types were
-         * built. If several libraries that use \b %ALib are linked together, each should invoke this
-         * test against separately. The macro \c ALIB_COMPATIBILITY_VERIFYER will provide the
-         * flags.
-         *
-         * @param flags The flags externally grabbed using macro \c ALIB_COMPATIBILITY_VERIFYER.
-         *
-         * @return \c true if compatible, \c false else.
-         ******************************************************************************************/
-        ALIB_API
-        static bool    VerifyCompilationFlags( uint64_t flags );
 
     // #############################################################################################
     // Other static interface methods
@@ -646,99 +636,76 @@ class ALIB
             ALIB_API static void Sleep( const time::Ticks& ticks );
         #endif
 
-    #if ALIB_MODULE_BOXING || ALIB_MODULE_STRINGS
-        #if defined(DOX_PARSER)
-            /** ************************************************************************************
-             * Same as \c std::strlen and \c std::wcslen but using char32_t arrays.
-             * \note
-             *   As far as we know, no (fast) platform specific versions of this method is
-             *   available. Therefore, this method, together with #strlen32 use a preprocessor
-             *   switch dependent on the sizeof(wchar_t).
-             *
-             * @param s Pointer to the start of the cstring.
-             *
-             * @return  The length of string, aka the first index containing a value \c 0.
-             **************************************************************************************/
-            ALIB_API
-            static size_t   strlen16( const char16_t* s );
-
-            /** ************************************************************************************
-             * Same as \c std::strlen and \c std::wcslen but using char32_t arrays.
-             * \note
-             *   As far as we know, no (fast) platform specific versions of this method is
-             *   available. Therefore, this method, together with #strlen32 use a preprocessor
-             *   switch dependent on the sizeof(wchar_t).
-             *
-             * @param s Pointer to the start of the cstring.
-             *
-             * @return  The length of string, aka the first index containing a value \c 0.
-             **************************************************************************************/
-            inline
-            static size_t   strlen32( const char32_t* s )
-            {
-                static_assert( sizeof(wchar_t) == sizeof( char32_t), "Error: Platform not supported" );
-                return wcslen( reinterpret_cast<const wchar_t*>(s) );
-            }
-
-        #elif ALIB_SIZEOF_WCHAR_T == 4
-            ALIB_API
-            static size_t   strlen16( const char16_t* s );
-
-            inline
-            static size_t   strlen32( const char32_t* s )
-            {
-                static_assert( sizeof(wchar_t) == sizeof( char32_t), "Error: Platform not supported" );
-                return wcslen( reinterpret_cast<const wchar_t*>(s) );
-            }
-        #else
-            inline
-            static size_t   strlen16( const char16_t* s )
-            {
-                static_assert( sizeof(wchar_t) == sizeof( char16_t), "Error: Platform not supported" );
-                return wcslen( reinterpret_cast<const wchar_t*>(s) );
-            }
-
-            ALIB_API
-            static size_t   strlen32( const char32_t* s );
-        #endif
-    #endif
-
 
     // #############################################################################################
     // Internal methods
     // #############################################################################################
     protected:
         /** ****************************************************************************************
-         * Implements public methods #Init.
+         * Implementation of \alib{lang,Library::init}.
+         *
+         * In phase \alib{lang,Library::Phases::final} performs:
+         * - In glibc versions of \b %ALib (GNU/unix) probably invoke glibc method
+         *   <em>setlocale()</em>, depending on the setting of the environment variables
+         *   <em>LANG</em> and <em>LANGUAGE</em>
+         *   and depending on \b %ALib configuration variable
+         *   [ALIB_LOCALE](../group__GrpALoxConfigVars.html).
+         *
+         *   In addition, invokes
+         *   \alib{strings,NumberFormat::SetFromLocale} on static singleton
+         *   \alib{strings,NumberFormat::Global}.
+         *
+         * - Config variable [WAIT_FOR_KEY_PRESS](../group__GrpALoxConfigVars.html)
+         *   is read and field #WaitForKeyPressOnTermination set accordingly
+         *
+         *
+         * @param phase  The initialization phase to perform.
          ******************************************************************************************/
-        static void           init();
+        virtual void        init( Phases phase )                                           override;
 
-};// class ALIB
+        /** ****************************************************************************************
+         * Implementation of
+         * \alib{lang,Library::terminationCleanUp}.
+         ******************************************************************************************/
+        virtual void        terminationCleanUp()                                           override;
+
+
+};// class ALib
+
+
+/** ************************************************************************************************
+ * The static library singleton of namespace #aworx::lib.
+ **************************************************************************************************/
+ALIB_API
+extern ALib   ALIB;
 
 } // namespace lib
 
 /** Type alias name in namespace #aworx. */
-using ALIB=                     aworx::lib::ALIB;
-
+using ALib=                     aworx::lib::ALib;
 
 } // namespace aworx
+
+
+#if ALIB_MODULE_CONFIGURATION
+    ALIB_CONFIG_VARIABLES( aworx::lib::Variables, lib::ALIB, "Var" )
+#endif
 
 
 // #################################################################################################
 // Further standard includes (for convenience)
 // #################################################################################################
-// #################################################################################################
-#if ALIB_MODULE_STRINGS
-    #if !defined(DOX_PARSER)
-    #define ALIB_PROPER_INCLUSION
-    #endif
-
-        #include "alib/strings/applicables.hpp"
-
-    #undef ALIB_PROPER_INCLUSION
+#if !defined(DOX_PARSER)
+#define ALIB_PROPER_INCLUSION
 #endif
+
+    #include "alib/strings/applicables.hpp"
+
+#undef ALIB_PROPER_INCLUSION
+
+#endif // ALIB_MODULE_STRINGS
 
 
 #endif // just module ALib Singleton
 
-#endif // HPP_ALIB_MODULES
+#endif // HPP_ALIB

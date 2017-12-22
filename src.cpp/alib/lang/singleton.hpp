@@ -95,12 +95,12 @@ extern ALIB_API bool  getSingleton   ( const std::type_info& type, void* theSing
 extern ALIB_API void  storeSingleton ( const std::type_info& type, void* theSingleton );
 extern ALIB_API void  removeSingleton( const std::type_info& type );
 #endif
-//! @endcond NO_DOX
+//! @endcond
 
 
 /** ************************************************************************************************
  * \note
- *   This class is extracted and exposed as an own <b>ALib Module</b>, found here:
+ *   This class is extracted and exposed as an own <b>%ALib Module</b>, found here:
  *   [ALib Singleton](https://github.com/AlexWorx/ALib-Singleton).
  *
  * <b>Background Information on Template Singletons and Windows OS DLLs:</b><br>
@@ -174,8 +174,9 @@ extern ALIB_API void  removeSingleton( const std::type_info& type );
  *
  * Prior to terminating the process, the singletons can be destructed and deleted using namespace function
  * \ref aworx::lib::lang::DeleteSingletons. See this method's description for more information.
- * Especially Note that method
- * \ref aworx::lib::ALIB::TerminationCleanUp "ALIB::TerminationCleanUp" invokes this method already.
+ * Especially Note that
+ * \alib{lang,Library,"library termination"} on singleton \ref aworx::lib::ALIB invokes this method
+ * already.
  *
  *
  * <b>Restrictions / Penalties:</b><br>
@@ -213,10 +214,10 @@ extern ALIB_API void  removeSingleton( const std::type_info& type );
  * For this, \b %ALib provides namespace function
  * \ref aworx::lib::debug::GetSingletons "GetSingletons".
  * This function is using class AString, and hence it is available only with \b %ALib distributions that
- * includes module <b>ALib String</b>.
+ * includes module <b>%ALib String</b>.
  * Fore example modules
  * [ALib Singleton](https://github.com/AlexWorx/ALib-Singleton) or
- * [ALib %Boxing](https://github.com/AlexWorx/ALib-Boxing) are missing this method.
+ * [%ALib %Boxing](https://github.com/AlexWorx/ALib-Boxing) are missing this method.
  * The good news is, that it is quite easy to create an own debug method, just as the
  * following sample shows:
  *
@@ -285,9 +286,9 @@ TDerivedClass* Singleton<TDerivedClass>::singleton= nullptr;
  * (Otherwise this can be omitted, as the memory is cleaned by the OS probably much faster when a
  * process exits).
  *
- * When using singletons with the full implementation of \b %ALib (in contrast in using just the module
- * <b>ALib %Singleton</b>), then the method
- * \ref aworx::lib::ALIB::TerminationCleanUp "ALIB::TerminationCleanUp" invokes this method
+ * When using singletons with the full implementation of \b %ALib (in contrast in using just the
+ * module <b>%ALib %Singleton</b>), then
+ * \alib{lang,Library,"library termination"} on singleton \ref aworx::lib::ALIB invokes this method
  * already.
  *
  * \note This method is not thread-safe and hence must be called only on termination of the process

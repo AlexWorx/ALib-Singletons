@@ -30,7 +30,7 @@ class JustOne : public aworx::Singleton<JustOne>
 
 // import the map of singletons. This is not done in the header files by purpose!
 namespace aworx { namespace lib { namespace lang {
-    extern ALIB_API TypeinfoMap<void*>  singletonMap;
+    extern ALIB_API RTTIUnorderedMap<void*>  singletonMap;
 }}}
 
 
