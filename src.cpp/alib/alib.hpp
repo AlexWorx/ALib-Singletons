@@ -1,7 +1,7 @@
 // #################################################################################################
 //  ALib - A-Worx Utility Library
 //
-//  Copyright 2013-2017 A-Worx GmbH, Germany
+//  Copyright 2013-2018 A-Worx GmbH, Germany
 //  Published under 'Boost Software License' (a free software license, see LICENSE.txt)
 // #################################################################################################
 /** @file */ // Hello Doxygen
@@ -11,21 +11,11 @@
 
 
 #define ALIB_VERSION              1712
-#define ALIB_REVISION                0
+#define ALIB_REVISION                1
 
 // Uncomment to test for unnecessary includes. Must not be done with cotire unity builds.
 // #define HPP_COM_ALIB_TEST_INCLUDES
 
-// compiler check
-#if defined(__GNUC__)
-    #if __cplusplus < 201103L
-        #error "ALib Needs C++ 11. Compilation aborted"
-    #endif
-#endif
-
-#if defined ( _MSC_VER )  &&  _MSC_VER < 1600 // VS 2010 == VC10 == _MSC_VER 1600
-    #error "ALib Needs C++ 11. Compilation aborted"
-#endif
 
 // #################################################################################################
 // basic system headers
@@ -117,7 +107,7 @@
     #define     ALIB_MODULE_SYSTEM
     #define     ALIB_MODULE_ALL
 #else
-#define ALIB_PROPER_INCLUSION
+#   define ALIB_PROPER_INCLUSION
 #endif
 
     // basics used with all modules

@@ -3,7 +3,7 @@
 //
 //  Essential ALib types needed by every module
 //
-//  Copyright 2013-2017 A-Worx GmbH, Germany
+//  Copyright 2013-2018 A-Worx GmbH, Germany
 //  Published under 'Boost Software License' (a free software license, see LICENSE.txt)
 // #################################################################################################
 /** @file */ // Hello Doxygen
@@ -301,7 +301,7 @@ ALIB_API void  DeleteSingletons();
         // forward declaration
         }  namespace debug {
 
-        /** ********************************************************************************************
+        /** ****************************************************************************************
          * This debug helper function writes all type names and addresses of each instance of class
          * \ref aworx::lib::lang::Singleton "Singleton"
          * currently defined into a vector.
@@ -321,7 +321,7 @@ ALIB_API void  DeleteSingletons();
          *  exists, which writes the list into an \b %AString, ready to be "dumped out".
          *
          * @return The list of singleton types with void pointers to the singletons.
-         **********************************************************************************************/
+         ******************************************************************************************/
         ALIB_API
         std::vector<std::pair<const std::type_info*, void*>>
         GetSingletons();

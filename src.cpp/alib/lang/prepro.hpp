@@ -3,7 +3,7 @@
 //
 //  General ALib preprocessor macros
 //
-//  Copyright 2013-2017 A-Worx GmbH, Germany
+//  Copyright 2013-2018 A-Worx GmbH, Germany
 //  Published under 'Boost Software License' (a free software license, see LICENSE.txt)
 // #################################################################################################
 /** @file */ // Hello Doxygen
@@ -236,6 +236,18 @@
  *    Compiler/platform dependent value. Gives the sizeof values of type \c wchar_t in bytes.
  *    Possible values are \b 2 and \b 4.
  *
+ *  \def  ALIB_CPP14
+ *  Macro which is \c 1 defined when compiled with <b>C++ 14</b> standard or higher and \c 0
+ *  with <b>C++ 11</b>.
+ *
+ *  \def  ALIB_CPP14_CONSTEXPR
+ *  Macro used in situations when C++ keyword \c constexpr is not allowed in <b>C++ 11</b> but in
+ *  <b>C++ 14</b> onwards.
+ *
+ *  \def  ALIB_CPP17
+ *  Macro which is \c 1 defined when compiled with <b>C++ 14</b> standard or higher and \c 0
+ *  with <b>C++ 11</b>.
+ *
  *  \def  ALIB_SRCPOS
  *  This macro fills in the built-in compiler symbols that provide the current source file,
  *  line number and function strings.<p>
@@ -267,7 +279,13 @@
 #if defined(DOX_PARSER)
     #define     ALIB_DBG
     #define     ALIB_REL_DBG
+
+    #define     ALIB_CPP14
+    #define     ALIB_CPP14_CONSTEXPR
+    #define     ALIB_CPP17
+
     #define     ALIB_NO_RETURN
+
     #define     ALIB_SIZEOF_WCHAR_T
     #define     ALIB_SRCPOS
     #define     ALIB_SRCPOS_REL_EMPTY
@@ -275,6 +293,7 @@
 
 #else
 
+    // debug/release code selection
     #if ALIB_DEBUG
         #define ALIB_DBG(...)    __VA_ARGS__
         #define ALIB_REL_DBG(releaseCode, ...)    __VA_ARGS__
@@ -283,6 +302,7 @@
         #define ALIB_REL_DBG(releaseCode, ...)    releaseCode
     #endif
 
+    // size of wchar_t
     #if defined(__WCHAR_MAX__)
         #if  __WCHAR_MAX__ == 0x7FFFFFFF
             #define     ALIB_SIZEOF_WCHAR_T    4
@@ -297,8 +317,54 @@
     #endif
     static_assert( sizeof(wchar_t) == ALIB_SIZEOF_WCHAR_T, "Error: Platform not supported" );
 
+    // C++ standard
+    #if defined ( _MSC_VER )  &&  _MSC_VER < 1600 // VS 2010 == VC10 == _MSC_VER 1600
+    #   error "ALib needs C++ 11. Compilation aborted"
+    #endif
+    #if defined(_MSVC_LANG)
+    #     if  _MSVC_LANG == 201103L
+    #     define  ALIB_CPP14   0
+    #     define  ALIB_CPP17   0
+    #   elif  _MSVC_LANG == 201402L
+    #     define  ALIB_CPP14   1
+    #     define  ALIB_CPP17   0
+    #   elif _MSVC_LANG == 201703L
+    #     define  ALIB_CPP14   1
+    #     define  ALIB_CPP17   1
+    #   else
+            static_assert( false, "Unknown C++ Standard \"" ALIB_STRINGIFY(__cplusplus) "\"" )
+    #       error "Aborting"
+    #   endif
+    #else
+    #     if   __cplusplus < 201103L
+    #      error "ALib needs C++ 11. Compilation aborted"
+    #   elif   __cplusplus == 201103L
+    #     define  ALIB_CPP14   0
+    #     define  ALIB_CPP17   0
+    #   elif __cplusplus == 201402L
+    #     define  ALIB_CPP14   1
+    #     define  ALIB_CPP17   0
+    #   elif __cplusplus == 201703L
+    #     define  ALIB_CPP14   1
+    #     define  ALIB_CPP17   1
+    #   else
+            static_assert( false, "Unknown C++ Standard \"" ALIB_STRINGIFY(__cplusplus) "\"" )
+    #       error "Aborting"
+    #   endif
+    #endif
+
+    #if ALIB_CPP14
+    #   define ALIB_CPP14_CONSTEXPR constexpr
+    #else
+    #   define ALIB_CPP14_CONSTEXPR
+    #endif
+
+
+    // annotations
     #define ALIB_NO_RETURN              [[ noreturn ]]
 
+
+    // Macros for passing source code information
     #if defined( __GNUC__ )
         #define ALIB_SRCPOS    __FILE__, __LINE__, __func__
       //#define ALIB_SRCPOS    __FILE__, __LINE__, __PRETTY_FUNCTION__
@@ -316,6 +382,7 @@
         #define ALIB_SRCPOS_REL_EMPTY
         #define ALIB_SRCPOS_REL_NULLED        nullptr, 0, nullptr
     #endif
+
 
 #endif //DOX_PARSER
 
@@ -338,6 +405,7 @@
  *  - #ALIB_WARNINGS_UNINITIALIZED_OFF.
  *  - #ALIB_WARNINGS_MACRO_NOT_USED_OFF.
  *  - #ALIB_WARNINGS_OVERLOAD_VIRTUAL_OFF.
+ *  - #ALIB_WARNINGS_ALLOW_SPARSE_ENUM_SWITCH
  *  - #ALIB_WARNINGS_ALLOW_BITWISE_SWITCH
  *
  * \def  ALIB_WARNINGS_ALLOW_TEMPLATE_META_PROGRAMMING
@@ -356,6 +424,10 @@
  *  Preprocessor macro to disable compiler warnings about virtual methods that become hidden
  *  by overloaded methods with a different signature.
  *
+ * \def  ALIB_WARNINGS_ALLOW_SPARSE_ENUM_SWITCH
+ *  Preprocessor macro to disable compiler warnings when an enumeration element is switched while
+ *  not all enumeration elements get caught.
+ *
  * \def  ALIB_WARNINGS_ALLOW_BITWISE_SWITCH
  *  Preprocessor macro to disable compiler warnings when a
  *  "bitwise type scoped enumeration" (see \alib{lang,T_EnumIsBitwise}) or similar types with
@@ -373,6 +445,7 @@
     #define     ALIB_WARNINGS_UNINITIALIZED_OFF
     #define     ALIB_WARNINGS_OVERLOAD_VIRTUAL_OFF
     #define     ALIB_WARNINGS_MACRO_NOT_USED_OFF
+    #define     ALIB_WARNINGS_ALLOW_SPARSE_ENUM_SWITCH
     #define     ALIB_WARNINGS_ALLOW_BITWISE_SWITCH
     #define     ALIB_FALLTHROUGH
 
@@ -417,6 +490,9 @@
         _Pragma("clang diagnostic push")                                       \
         _Pragma("clang diagnostic ignored \"-Wunused-macros\"")
 
+    #define ALIB_WARNINGS_ALLOW_SPARSE_ENUM_SWITCH                             \
+        _Pragma("clang diagnostic push")                                       \
+        _Pragma("clang diagnostic ignored \"-Wswitch-enum\"")                  \
 
     #define ALIB_WARNINGS_ALLOW_BITWISE_SWITCH                                 \
         _Pragma("clang diagnostic push")                                       \
@@ -443,6 +519,9 @@
         _Pragma("GCC diagnostic push")                                         \
 
     #define ALIB_WARNINGS_OVERLOAD_VIRTUAL_OFF                                 \
+        _Pragma("GCC diagnostic push")                                         \
+
+    #define ALIB_WARNINGS_ALLOW_SPARSE_ENUM_SWITCH                             \
         _Pragma("GCC diagnostic push")                                         \
 
     #define ALIB_WARNINGS_ALLOW_BITWISE_SWITCH                                 \
@@ -474,6 +553,9 @@
         __pragma(warning( push ))                                              \
 
     #define ALIB_WARNINGS_OVERLOAD_VIRTUAL_OFF                                 \
+        __pragma(warning( push ))                                              \
+
+    #define ALIB_WARNINGS_ALLOW_SPARSE_ENUM_SWITCH                             \
         __pragma(warning( push ))                                              \
 
     #define ALIB_WARNINGS_ALLOW_BITWISE_SWITCH                                 \
@@ -588,6 +670,57 @@
         #define ALIB_FEAT_THREADS 1
     #else
         #define ALIB_FEAT_THREADS 0
+    #endif
+#endif //DOX_PARSER
+
+/**
+ * @addtogroup GrpALibCompilerSymbols
+ * @{
+ *  \def  ALIB_FEAT_BOOST_REGEX_ON
+ *    This compiler symbol enables the use of string utility class \alib{strings::util,RegexMatcher}
+ *    by defining source selection symbol \ref ALIB_FEAT_BOOST_REGEX.
+ *    Class \b %RegexMatcher is in fact only a simple wrapper around external
+ *    [boost::regex library](http://www.boost.org).
+ *
+ *    If this symbol is not explicitly given to the compiler, \ref ALIB_FEAT_BOOST_REGEX remains
+ *    undefined, the \b %boost library is not included and class \b %RegexMatcher is not available.
+ *
+ *  \def  ALIB_FEAT_BOOST_REGEX_OFF
+ *    This compiler symbol disables the definition of source selection symbol
+ *    \ref ALIB_FEAT_BOOST_REGEX.
+ *
+ *    This is the default, hence the symbol is not needed to be passed, but it is available for
+ *    completeness.<br>
+ *
+ * @}
+ *
+ * @addtogroup GrpALibCodeSelectorSymbols
+ * @{
+ *  \def  ALIB_FEAT_BOOST_REGEX
+ *    Selects code for class \alib{strings::util,RegexMatcher} and features within \b %ALib
+ *    that uses this wrapper class.
+ *
+ *    See compiler symbol \ref ALIB_FEAT_BOOST_REGEX_ON for information on how to activate this
+ *    library feature.
+ * @}
+ */
+#if defined(DOX_PARSER)
+    #define     ALIB_FEAT_BOOST_REGEX
+    #define     ALIB_FEAT_BOOST_REGEX_ON
+    #define     ALIB_FEAT_BOOST_REGEX_OFF
+#else
+    #if defined(ALIB_FEAT_BOOST_REGEX)
+        #error "ALIB_FEAT_BOOST_REGEX must not be set from outside"
+    #endif
+
+    #if defined(ALIB_FEAT_BOOST_REGEX_ON) && defined(ALIB_FEAT_BOOST_REGEX_OFF)
+        #error "ALIB_FEAT_BOOST_REGEX_ON / ALIB_FEAT_BOOST_REGEX_OFF are both set"
+    #endif
+
+    #if defined(ALIB_FEAT_BOOST_REGEX_ON)
+        #define ALIB_FEAT_BOOST_REGEX 1
+    #else
+        #define ALIB_FEAT_BOOST_REGEX 0
     #endif
 #endif //DOX_PARSER
 

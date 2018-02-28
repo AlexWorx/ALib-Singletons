@@ -1,7 +1,7 @@
 // #################################################################################################
 //  ALib - A-Worx Utility Library
 //
-//  Copyright 2013-2017 A-Worx GmbH, Germany
+//  Copyright 2013-2018 A-Worx GmbH, Germany
 //  Published under 'Boost Software License' (a free software license, see LICENSE.txt)
 // #################################################################################################
 #include "alib/alib.hpp"
@@ -18,8 +18,8 @@ namespace aworx { namespace lib { namespace lang {
 //! @cond NO_DOX
 
 #if ALIB_FEAT_SINGLETON_MAPPED
-    extern ALIB_API RTTIUnorderedMap<void*>  singletonMap; // not declared in a header, avoid clang (strict) warning
-           ALIB_API RTTIUnorderedMap<void*>  singletonMap;
+    extern ALIB_API TypeMap<void*>  singletonMap; // not declared in a header, avoid clang (strict) warning
+           ALIB_API TypeMap<void*>  singletonMap;
 
 
     #if ALIB_FEAT_THREADS
@@ -91,7 +91,7 @@ void DeleteSingletons()
         std::vector<std::pair<const std::type_info*, void*>>  GetSingletons()
         {
             std::vector<std::pair<const std::type_info*, void*>> result;
-            for( auto it : lang::singletonMap )
+            for( auto& it : lang::singletonMap )
                 result.emplace_back( &it.first.get(), it.second);
 
             return result;

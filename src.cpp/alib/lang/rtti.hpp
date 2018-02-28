@@ -3,7 +3,7 @@
 //
 //  Essential ALib types needed by every module
 //
-//  Copyright 2013-2017 A-Worx GmbH, Germany
+//  Copyright 2013-2018 A-Worx GmbH, Germany
 //  Published under 'Boost Software License' (a free software license, see LICENSE.txt)
 // #################################################################################################
 /** @file */ // Hello Doxygen
@@ -80,19 +80,6 @@ struct WrappedTypeInfoPredEqualTo
 
 } //namespace aworx::lib::lang[::detail]
 
-/** ************************************************************************************************
- * Templated type definition for a <c>std::unordered_map</c> that uses key objects of type
- * #detail::WrappedTypeInfo.<br>
- * This is used by \b %ALib internally to store pointers to objects to singletons of the
- * provided type.
- * @tparam T    The type of the objects to map.
- **************************************************************************************************/
-template<typename T>
-using RTTIUnorderedMap= std::unordered_map< detail::WrappedTypeInfo,
-                                            T,
-                                            detail::WrappedTypeInfoHasher,
-                                            detail::WrappedTypeInfoPredEqualTo>;
-
 
 #if ALIB_DEBUG
         } // aworx::lib[::lang]
@@ -136,6 +123,19 @@ using RTTIUnorderedMap= std::unordered_map< detail::WrappedTypeInfo,
 
 }}; // namespace aworx[::lib::lang] (respectively aworx[::lib::debug])
 
+
+/** ************************************************************************************************
+ * Templated type definition for a <c>std::unordered_map</c> that uses key objects of type
+ * \alib{lang,detail,WrappedTypeInfo}.<br>
+ * This is used by \b %ALib internally to store pointers to objects to singletons of the
+ * provided type.
+ * @tparam T    The type of the objects to map.
+ **************************************************************************************************/
+template<typename T>
+using TypeMap= std::unordered_map< lib::lang::detail::WrappedTypeInfo,
+                                   T,
+                                   lib::lang::detail::WrappedTypeInfoHasher,
+                                   lib::lang::detail::WrappedTypeInfoPredEqualTo>;
 
 } // namespace aworx
 #endif // HPP_ALIB_LANG_RTTI
