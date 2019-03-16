@@ -5,7 +5,14 @@
 //  Copyright 2017 A-Worx GmbH, Germany
 //  Published under Boost Software License (a free software license, see LICENSE.txt)
 // #################################################################################################
-#include "alib/alib.hpp"
+
+#if !defined (HPP_ALIB_SINGLETONS_SINGLETON)
+#include "alib/singletons/singleton.hpp"
+#endif
+
+#if !defined (HPP_ALIB_LIB_TYPEDEMANGLER)
+#   include "alib/lib/typedemangler.hpp"
+#endif
 
 #include <iostream>
 
@@ -29,7 +36,7 @@ class JustOne : public aworx::Singleton<JustOne>
 #if ALIB_DEBUG && ALIB_FEAT_SINGLETON_MAPPED
 
 // import the map of singletons. This is not done in the header files by purpose!
-namespace aworx { namespace lib { namespace lang {
+namespace aworx { namespace lib { namespace singletons {
     extern ALIB_API TypeMap<void*>  singletonMap;
 }}}
 
@@ -39,9 +46,9 @@ void  DumpSingletons()
 {
     std::cout << "Debug-Mode: Dumping Singletons: " << std::endl;
 
-    for( auto it : aworx::lib::lang::singletonMap )
+    for( auto it : aworx::lib::singletons::singletonMap )
         std::cout << "  "
-             << aworx::lib::debug::TypeDemangler(it.first.get()).Get()
+             << aworx::lib::DbgTypeDemangler(it.first.get()).Get()
              << " = 0x" << std::hex
              << reinterpret_cast<uint64_t>(it.second)
              << std::endl;
@@ -51,15 +58,15 @@ void  DumpSingletons()
 int main()
 {
 
-    MyClass* myClassSingleton= MyClass::GetSingleton();
-    std::cout << "The singleton of MyClass is: " << std::hex  << myClassSingleton << std::endl;
+    MyClass& myClassSingleton= MyClass::GetSingleton();
+    std::cout << "The singleton of MyClass is: " << std::hex  << &myClassSingleton << std::endl;
 
     // It is still allowed to create other instances of MyClass (non-strict implementation)
     // but this will not appear in the singleton list below and is not considered a singleton.
     MyClass instance2;
     std::cout << "Another instance of MyClass is: " << std::hex  << &instance2     << std::endl;
 
-    JustOne *theOne= JustOne::GetSingleton();
+    JustOne theOne= JustOne::GetSingleton();
     // We can't create a second one, constructor is private
 
 
